@@ -1,6 +1,8 @@
 ---
 name: react-antipatterns-review
 description: "Review React/JSX/TSX code for anti-patterns (Effects, state, hooks, memo, keys, mutation) and output a prioritized fix plan without editing code. Use for any React code review, audit, re-render or hook question, even if 'anti-pattern' isn't said."
+metadata:
+  version: "2.0"
 ---
 
 # React Anti-Pattern Review (observe-only)
@@ -18,7 +20,10 @@ that's a separate step they ask for.
 
 - `references/catalog.md` — every anti-pattern with an ID (A1–A12, B1–B4, C1, D1–D9, E1–E3),
   the default severity index, why it matters, the fix, and a "Legitimate uses" list. Read it before
-  reviewing, every time. Each finding cites an ID and its reasoning has to match the catalog, which
+  reviewing, every time, and read all of it: it's about 800 lines, so if your tool truncates long
+  files, read it in ranges until you reach "Judging severity" at the end. Its first line names the
+  catalog version; if that isn't v2, or entries from the checklist below (D8, E1, E3) are missing,
+  you've loaded a stale copy. Say so at the top of the report rather than reviewing against it. Each finding cites an ID and its reasoning has to match the catalog, which
   is what makes a flag justified rather than just labeled. The "Legitimate uses" section is how you
   avoid false positives.
 - `references/report-format.md` — the report template, the fix plan template, and how to save the
@@ -27,18 +32,32 @@ that's a separate step they ask for.
 
 ## Workflow
 
-### 1. Settle scope and output in one message
+### 1. Ask where the output goes — first reply, before any review
 
-Every review ends with a fix plan, so don't ask whether to make one. What you do ask, once and
-before reviewing, is where the output goes:
+Every review ends with a fix plan, so never ask whether to make one. What you do ask is where the
+review and plan should go. Unless the user's message already answers it, your **first reply is only
+this question**, even when the code is right there in the message:
 
-> Should I just show the review and fix plan here (default), or also save them as a Markdown file?
+> Before I start: should I show the review and fix plan here (default), or also save them as a
+> Markdown file?
 
-Skip the question when the user already said ("save it", "just show me", "write it to review.md"),
-or when the environment can't write files (then show it in the conversation). If the request is also
-vague about *what* to review ("check my component" with nothing attached), ask both in the same
-message so the user answers once. If they reply with code but don't answer the output question, use
-the default. Asking twice would be more friction than the choice is worth.
+Then stop and wait. Don't read files, scan, or start writing findings in the same turn. The user
+set up this skill so they get this choice every time; reviewing first and offering the file later
+takes the choice away, and a finished review in the chat makes a file feel like a redundant extra.
+If the environment has a question tool (e.g. `AskUserQuestion`), use it with two options; otherwise
+ask in plain text.
+
+Skip the question only when:
+- the user's message already states the output ("save it", "write it to review.md", "just show me",
+  "show the results here"), or
+- the environment can't write files (show the output in the conversation).
+
+If the request is also vague about *what* to review ("check my component" with nothing attached),
+put both questions in the same message so the user answers once.
+
+The default applies to the user's *answer*: if they reply without choosing (they just say "go",
+paste more code, or answer only the scope question), show the output in the conversation and don't
+ask again.
 
 In a project folder, a quick look for an obvious target is fine (the file open in the editor, the
 only component in the folder). If you'd have to pick among several candidates, ask instead:
