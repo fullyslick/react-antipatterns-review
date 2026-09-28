@@ -18,12 +18,12 @@ Number findings across the whole report (F1, F2, …) so plan steps can refer to
 ```
 # React anti-pattern review
 
-Scope: <what you reviewed> · <N> findings (<x> High · <y> Medium · <z> Low)
+Scope: <what you reviewed> · <N> findings (<x> High · <y> Medium · <z> Low) · catalog v2
 Assumptions: <React version / compiler / platform, if not visible in the code>
 
 ## <path/to/File.tsx>
 
-### F1 [HIGH] <short title> — <catalog ID> (around line <N> / `functionName`)
+### F1 [HIGH] <short title> — <catalog ID> (<anchor>)
 **What:** <the specific code, quoted or tightly described>
 **Why it's flagged:** <the concrete problem in THIS code, using the catalog's reasoning>
 **Fix:** <the change, with a tiny before → after snippet where it helps>
@@ -33,6 +33,9 @@ Assumptions: <React version / compiler / platform, if not visible in the code>
 ## <path/to/OtherFile.tsx>
 ...
 
+## Outside the catalog / worth a look   (omit if empty)
+- <one line each: an uncertain catalog match, or a real problem the catalog doesn't cover>
+
 ## Summary
 <2–4 sentences: the highest-severity themes, patterns that recur across files, and the one or two
 things to fix first. No new findings here.>
@@ -41,8 +44,11 @@ things to fix first. No new findings here.>
 Guidelines:
 
 - **Severity tag in the heading** so readers can scan for serious ones while the order stays sequential.
-- **Anchors:** a line number if the source has them, otherwise the function name plus a short quote.
-  "around line N" is fine.
+- **Anchors:** `line 12`, `lines 12–19`, or `around line 12` when you can count lines; otherwise
+  the function or expression, e.g. `` `toggle` `` or `` `const sorted = todos.sort(...)` ``. Use one
+  form, never a half-filled one like "around line, `toggle`".
+- **Uncertain matches and outside-catalog notes** go in their own section before the Summary, not
+  inside the Summary, which only restates the through-line of the findings.
 - **The "Why" is about their code.** "`filtered` is set only inside the Effect that reads `items` and
   `query`, so it's derived state (A2)" beats "storing derived data in state is bad."
 - **Fix snippets stay small** — the minimal before/after that shows the idea.

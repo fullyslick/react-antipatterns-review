@@ -1,4 +1,4 @@
-# React Anti-Pattern Catalog
+# React Anti-Pattern Catalog (v2)
 
 The full reference of anti-patterns to flag, with default severities and fixes. Every finding
 must cite one of these IDs. Read the entry before flagging so the justification is accurate.
@@ -634,6 +634,15 @@ useEffect(() => { const id = setInterval(onTick, 1000); return () => clearInterv
 **Why:** each render has its own props and state; a function created during a render keeps seeing that render's values forever. When it runs later, it acts on old data — lost increments, wrong alerts, list updates that overwrite concurrent changes. It's hard to spot because the code reads correctly.
 **Fix:** pick by situation — (1) computing the next state from the previous one: functional updater (`setX(prev => …)`); (2) reading the latest value inside an async callback created by an event handler: latest-value ref; (3) inside an Effect, where the value shouldn't cause a re-run: `useEffectEvent` on React 19.2+, otherwise the ref pattern. If the value *should* restart the Effect, it's D3 instead — add it to the deps. Check the React version before recommending `useEffectEvent`.
 
+**Deciding intent (event handlers).** In an Effect or a long-lived subscription, a stale read is
+almost always a bug. In an event handler, reading the value *as of the click* is often exactly what
+the user expects, so the closure is only a bug when the code shows it wants the value at fire time:
+a name like `latest`/`current`, a comment, a value it then writes back to state, or a read after an
+`await` that it merges with state. If the intent is ambiguous (e.g. `setTimeout(() => alert(count),
+3000)` in a click handler), don't report a High finding. Mention it as "worth a look, not certain"
+with a one-line explanation of both readings, and don't give it a plan step. A wrong High here sends
+the user off to "fix" code that may be correct.
+
 ### D8. Direct state mutation — *High*
 
 **Signal:** modifying an object/array that is (or is inside) state or props, then setting it back or relying on a re-render. Look for: property assignment on a state object (`user.name = …`, `todo.done = !todo.done` on an item found with `.find`), in-place array methods on state or props (`push`, `pop`, `splice`, `shift`, `unshift`, `sort`, `reverse`, `fill`, `copyWithin`), `delete obj.key`, `Object.assign(stateObj, …)`, nested spread that stops one level too early, and `setX(x)` right after changing `x`. **`props.items.sort()` in render mutates the parent's data** — treat that as this entry too.
@@ -785,7 +794,8 @@ Check these before flagging, to avoid false positives.
   is the D7 fix. Don't flag that ref as D6.
 - **Capturing a value on purpose.** A timeout that should use the value *at the moment of the
   click* (e.g. "send to the recipient selected when you pressed Send") is correct closure
-  behavior, not D7. Flag only when the code clearly wants the latest value.
+  behavior, not D7. Flag only when the code clearly wants the latest value; see "Deciding intent"
+  under D7.
 - **`&&` with a boolean left side** (`isOpen &&`, `items.length > 0 &&`, `!!count &&`) is fine.
   Only numeric or possibly-`NaN` left sides are E2.
 
