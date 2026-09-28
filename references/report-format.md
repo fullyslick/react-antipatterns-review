@@ -45,7 +45,8 @@ Guidelines:
 
 - **Severity tag in the heading** so readers can scan for serious ones while the order stays sequential.
 - **Anchors:** `line 12`, `lines 12–19`, or `around line 12` when you can count lines; otherwise
-  the function or expression, e.g. `` `toggle` `` or `` `const sorted = todos.sort(...)` ``. Use one
+  the function or a short expression (under ~40 characters), e.g. `` `toggle` `` or
+  `` `todos.sort(...)` ``. The full code belongs in **What**, not the heading. Use one
   form, never a half-filled one like "around line, `toggle`".
 - **Uncertain matches and outside-catalog notes** go in their own section before the Summary, not
   inside the Summary, which only restates the through-line of the findings.
@@ -67,7 +68,9 @@ plan doesn't repeat fix snippets or contain rewritten components — each step p
    into handlers (A4/A7) often removes an Effect entirely, which can make a D3 or A11 finding on that
    Effect disappear. Say so when one step makes another unnecessary.
 3. **Group steps that touch the same code**, so the user edits each place once.
-4. **Low findings last**, in an "Optional clean-up" group.
+4. **Low findings last**, in an "Optional clean-up" group. Only Low findings go there; every High
+   and Medium finding gets its own numbered step (Medium ones after the High ones). Calling a Medium
+   finding optional tells the user it can be skipped, which the severity says it shouldn't be.
 
 ```
 ## Fix plan
